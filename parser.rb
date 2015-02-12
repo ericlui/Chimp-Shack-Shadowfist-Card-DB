@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*- #specify UTF-8 (unicode) characters
 
 require 'csv'
+require 'set'
 require_relative 'shadowfist_lib'
 
 
@@ -33,94 +34,67 @@ require_relative 'shadowfist_lib'
 
 puts "SELECT COUNT(*) FROM card;";
 puts "begin;"
+puts "DELETE from card where card_edition_id = $edition;"
 
-edition = -1
+factions = Set.new
 
-# card headers
-FACTION = "Faction"
-TITLE = "Title"
-SUBTITLE = "Subtitle"
-FIGHTING = "Fighting"
-POWER = "Power"
-BODY = "Body"
-REQUIRES = "Requires"
-PROVIDES = "Provides"
-TEXT = "Text"
-TAG = "Tag"
-ARTIST = "Artist"
-SET = "Set"
-RARITY = "Rarity"
+ARGF.file do |file|
 
-INTEGERS = [ FIGHTING, BODY, POWER]
+end
 
-ARGF.each do |line|
-  warn line.split(",").size
-  warn "foo"
-  warn line.inspect
-  CSV.parse(line, {:headers => true}) do |card|
-    if edition == -1
-      puts "DELETE from card where card_edition_id = $edition;"
-    end
 
-    nomax = (card[TEXT] =~ /^No Max./) ? "Y" : "N"
-    comments = ""
+CSV.parse(ARGF.file, {:headers => true}).each do |card|
+  nomax = (card[TEXT] =~ /^No Max./) ? "Y" : "N"
+  comments = "''"
 
-    req = /^(\D*)(\d+)$/.match(card[REQUIRES])
+  req = /^(\D*)(\d+)$/.match(card[REQUIRES])
+  if req 
     cost = req[2]
     card[REQUIRES] = req[1]
-
-    card[FACTION] = find_faction(card);
-    edition = sets(card[SET])
-
-    cost = 100 if (cost == "X")
-    card[BODY] = 100 if (card[BODY] == "X") || (card[TITLE] == "Evil Twin vPAP")
-    card[FIGHTING] = 100 if (card[FIGHTING] == "X") || (card[TITLE] == "Evil Twin vPAP")
-    card[POWER] = 100 if card[POWER] == "X"
-
-    type = infer_type(card[SUBTITLE]);
-
-    card[TAG] ||= ""
-    card[TEXT] = replace_resources(card[TEXT])
-    card[REQUIRES] = resources(card[REQUIRES])
-    card[PROVIDES] = resources(card[PROVIDES])
-
-    card[RARITY] = rarities(card[RARITY])
-    type = types(type)
-
-    cost ||= 0
-
-    INTEGERS.each do |key| 
-      card[key] ||= 0
-      card[key] = card[key].to_i
-    end
-
-    string_fields = []
-    card.each do |key, value|
-      if value.is_a? String
-        string_fields.push(key)
-      end
-    end
-
-    string_fields.each do |k|
-      value = card[k]
-      value = value.force_encoding('IBM437').encode('UTF-8')
-      value.gsub!(/[\“\”]/, '"')
-      value.gsub!(/\’/, '')
-      value = quote(value)
-      card[k] = value
-    end
-
-    designators = "| " + build_designators(card) + " |"
-
-    puts "INSERT INTO card (title, subtitle, cost, requires, provides,
-      fighting, power, body, text, flavor, comments, 
-      artist, card_type_id, card_cat_id, card_rarity_id,
-      card_edition_id, no_max_flag, designators)
-VALUES (#{[card[TITLE], card[SUBTITLE], cost, card[REQUIRES], card[PROVIDES],
-  card[FIGHTING], card[POWER], card[BODY], card[TEXT], card[TAG], comments,
-  card[ARTIST], type, card[FACTION], card[RARITY],
-  edition, nomax, designators].join(', ')});"
   end
+
+  card[FACTION] = find_faction(card);
+  edition = sets(card[SET])
+
+  cost = 100 if (cost == "X")
+  card[BODY] = 100 if (card[BODY] == "X") || (card[TITLE] == "Evil Twin vPAP")
+  card[FIGHTING] = 100 if (card[FIGHTING] == "X") || (card[TITLE] == "Evil Twin vPAP")
+  card[POWER] = 100 if card[POWER] == "X"
+
+  type = infer_type(card[SUBTITLE]);
+
+  card[TAG] ||= ""
+  card[TEXT] = replace_resources(card[TEXT])
+  card[REQUIRES] = resources(card[REQUIRES])
+  card[PROVIDES] = resources(card[PROVIDES])
+
+  card[RARITY] = rarities(card[RARITY])
+  type = types(type)
+
+  cost ||= 0
+
+  INTEGERS.each do |key| 
+    card[key] ||= 0
+    card[key] = card[key].to_i
+  end
+
+  string_fields = []
+  card.each do |key, value|
+    if value.is_a? String
+      card[key] = quote(value)
+    end
+  end
+
+  designators = "| " + build_designators(card) + " |"
+
+  puts "INSERT INTO card (title, subtitle, cost, requires, provides,
+    fighting, power, body, text, flavor, comments, 
+    artist, card_type_id, card_cat_id, card_rarity_id,
+    card_edition_id, no_max_flag, designators)
+VALUES (#{[card[TITLE], card[SUBTITLE], cost, card[REQUIRES], card[PROVIDES],
+card[FIGHTING], card[POWER], card[BODY], card[TEXT], card[TAG], comments,
+card[ARTIST], type, card[FACTION], card[RARITY],
+edition, nomax, designators].join(', ')});\n\n"
 end
 
 puts "SELECT COUNT(*) FROM card;"

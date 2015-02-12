@@ -69,6 +69,24 @@ CAT_SYMBOL = {
     '{syn}'=>'y',
              }
 
+
+# card headers
+FACTION = "Faction"
+TITLE = "Title"
+SUBTITLE = "Subtitle"
+FIGHTING = "Fighting"
+POWER = "Power"
+BODY = "Body"
+REQUIRES = "Requires"
+PROVIDES = "Provides"
+TEXT = "Text"
+TAG = "Tag"
+ARTIST = "Artist"
+SET = "Set"
+RARITY = "Rarity"
+
+INTEGERS = [ FIGHTING, BODY, POWER]
+
 def infer_type (subtitle) 
   return "FSS" if subtitle =~ /Feng Shui Site/
   return "Site" if subtitle =~ /Site/
@@ -91,10 +109,6 @@ def find_faction(card)
     faction = "High Tech" if (resources =~ /[Tec]/)
   end
   faction = CATEGORIES[faction] || 1
-end
-
-def sets(name) 
-  SETS[name]
 end
 
 def build_designators(card) 
@@ -152,6 +166,10 @@ end
 
 def rarities(rarity) 
   RARITIES[rarity]
+end
+
+def sets(name) 
+  SETS[name]
 end
 
 def types(type)
