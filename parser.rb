@@ -8,12 +8,12 @@ require_relative 'shadowfist_lib'
 # Useful bit for deleting aborted previous runs
 # 1 Flashpoint
 # 2 Limited / Standard
-# 3   Netherworld
+# 3 Netherworld
 # 4 Netherworld 2
 # 5 Throne War
-# 6   Year of the Dragon
-# 7   Shaolin Showdown
-# 8   Dark Future
+# 6 Year of the Dragon
+# 7 Shaolin Showdown
+# 8 Dark Future
 # 9 Boom Chaka Laka
 # 11  10,000 Bullets
 # 12  Red Wedding
@@ -78,6 +78,8 @@ CSV.parse(ARGF.file, {:headers => true}).each do |card|
     card[key] = card[key].to_i
   end
 
+  designators = "| " + build_designators(card) + " |"
+
   string_fields = []
   card.each do |key, value|
     if value.is_a? String
@@ -85,7 +87,8 @@ CSV.parse(ARGF.file, {:headers => true}).each do |card|
     end
   end
 
-  designators = "| " + build_designators(card) + " |"
+  nomax = quote(nomax)
+  designators = quote(designators)
 
   puts "INSERT INTO card (title, subtitle, cost, requires, provides,
     fighting, power, body, text, flavor, comments, 
