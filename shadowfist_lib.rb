@@ -19,7 +19,8 @@ CATEGORIES = { "Architects" => 1,
               "Syndicate" => 15 
              }
 
-SETS = { "Empire of Evil" => 18,
+SETS = { 
+        "Empire of Evil" => 18,
         "Combat in Kowloon" => 19,
         "Back for Seconds" => 20,
         "Reloaded" => 21,
@@ -27,7 +28,9 @@ SETS = { "Empire of Evil" => 18,
         "Revelations" => 23,
         "Queen's Gambit" => 24,
         "Knight's Passage" => 25, 
-        "Endgame" => 26
+        "Endgame" => 26,
+        "Coming Darkness" => 27
+
       }
 
 RARITIES = {
