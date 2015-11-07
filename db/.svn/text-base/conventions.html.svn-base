@@ -1,0 +1,28 @@
+<html>
+<head>
+<title>
+Shadowfist Search Engine
+</title>
+</head>
+<body>
+<ul>
+<li> Faction and talent symbols are represented by the following bracketed abbreviations.  In order to search for them in card text, use these symbols.
+<ul>
+<li> [f]: Architects of the Flesh
+<li> [a]: Ascended
+<li> [d]: Dragons
+<li> [e]: Eaters of the Lotus
+<li> [m]: Four Monarchs
+<li> [g]: Guiding Hand
+<li> [j]: Jammers
+<li> [p]: Purist
+<li> [s]: Seven Masters
+<li> [y]: Syndicate
+<li> [C]: Chi
+<li> [H]: High Tech
+<li> [M]: Magic
+</ul>
+<li> X costs and X Fighting are represented by 100, so search using that to find things that cost X.  As a result, they will also come up as greater than most numbers one would search for.
+</ul>
+</body>
+</html>
