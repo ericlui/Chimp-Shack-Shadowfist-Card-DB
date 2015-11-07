@@ -31,17 +31,19 @@ require_relative 'shadowfist_lib'
 # 24  Queen's Gambit
 # 25  Knight's Passage
 # 26  Endgame
+# 28 Year of the Goat
+
+edition = ARGV.shift
 
 puts "SELECT COUNT(*) FROM card;";
 puts "begin;"
-puts "DELETE from card where card_edition_id = $edition;"
+puts "DELETE from card where card_edition_id = #{edition};"
 
 factions = Set.new
 
 ARGF.file do |file|
 
 end
-
 
 CSV.parse(ARGF.file, {:headers => true}).each do |card|
   nomax = (card[TEXT] =~ /^No Max./) ? "Y" : "N"

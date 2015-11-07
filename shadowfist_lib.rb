@@ -29,7 +29,8 @@ SETS = {
         "Queen's Gambit" => 24,
         "Knight's Passage" => 25, 
         "Endgame" => 26,
-        "Coming Darkness" => 27
+        "Coming Darkness" => 27,
+	"Year of the Goat" => 28
 
       }
 
@@ -75,7 +76,7 @@ CAT_SYMBOL = {
 
 # card headers
 FACTION = "Faction"
-TITLE = "Title"
+TITLE = "Card Name"
 SUBTITLE = "Subtitle"
 FIGHTING = "Fighting"
 POWER = "Power"
