@@ -10,6 +10,7 @@ use strict;
 
 my $targetdb = "chimpsha_fistdb";       # defined later in &setdb
 my $loginfile= ".dbilogin";
+my $handle;
 
 # Create a database handle (publicly accessible)
 
@@ -19,6 +20,9 @@ sub setPlayTest {
 
 sub createHandle {
     my $type = shift;
+    if ($handle != undef) {
+	return $handle;
+    }
     if ($type eq "updater") {
 	return DBI->connect("DBI:mysql:$targetdb",'chimpsha_fistwri','*****');
     }
@@ -27,9 +31,11 @@ sub createHandle {
       chomp(my $f=<F>);
       close F;
       my ($dbuser, $dbpasswd,$db)=split /\|/,$f;
-      return DBI->connect("DBI:mysql:$db",$dbuser,$dbpasswd);
+      $handle = DBI->connect("DBI:mysql:$db",$dbuser,$dbpasswd);
+    } else { 
+      $handle = DBI->connect("DBI:mysql:$targetdb",'chimpsha_fistrea','g1mm3');
     }
-    return DBI->connect("DBI:mysql:$targetdb",'chimpsha_fistrea','g1mm3');
+    return $handle;
 }
 
 # Specify the database to reference
@@ -39,7 +45,6 @@ sub setdb {
     $targetdb = "shadowfist_pt" if ($db eq "playtest");
 
     return 0;
-
 }
 ######################################################################
 # option_set ($kind)
@@ -147,7 +152,15 @@ my %cat_symbol = (
     '[Sev]'=>'s',
     '[Syn]'=>'y',
 )
-;   
+;
+
+# map over alternate keys
+foreach (keys(%cat_symbol)) {
+  my $key = $_;
+  $cat_symbol{lc($_)} = $cat_symbol{$key};
+  tr/][//d;
+  $cat_symbol{$_} = $cat_symbol{$key};
+}
 
 my %type_map = (
     'site' => 1,
@@ -336,12 +349,6 @@ sub short_types {
 
 }
 
-# eg., 15 => y
-#sub categories_id2short {
-#    return query_hash("SELECT card_cat_id, code FROM card_cat");
-#}
-
-
 # eg., "Syndicate" => "y"
 sub categories_short {
     my ($dbh, $sth, $query, $cat, $code);
@@ -360,27 +367,10 @@ sub categories_short {
     $dbh->disconnect();
    
     return %categories;
-#    return query_hash("SELECT cat_short, code FROM card_cat");
 }
 
 # eg, "Architects of the Flesh" => "f"
 sub categories {
-#    my ($dbh, $sth, $query, $cat, $code);
-#    my %categories;
-
-#    $dbh = &createHandle();
-
-#    $query = "SELECT cat, code FROM card_cat";
-#    $sth = $dbh->prepare($query);
-#    $sth->execute();
-#    $sth->bind_columns(\$cat, \$code);
-
-#    while ($sth->fetch()) {
-#	$categories{$cat} = $code;
-#    }
-#    $dbh->disconnect();
-   
-#    return %categories;
     return query_hash("SELECT cat, code FROM card_cat");
 }
 
@@ -407,45 +397,10 @@ sub rarity {
 
 # return edition
 sub edition {
-#    my ($dbh, $sth, $query, $key, $value);
-#    my %editions;
-
-#    $dbh = &createHandle();
-#
-#    $query = "SELECT edition, card_edition_id FROM card_edition";
-#    $sth = $dbh->prepare($query);
-#    $sth->execute();
-#    $sth->bind_columns(\$key, \$value);
-
-#    while ($sth->fetch()) {
-#	$editions{$key} = $value;
-#    }
-    
-#    $dbh->disconnect();
-   
-#    return %editions;
     return query_hash("SELECT edition, card_edition_id FROM card_edition");
-
 }
 
 sub category {
-#    my ($dbh, $sth, $query, $key, $value);
-#    my %categories;
-
-#    $dbh = &createHandle();
-
-#    $query = "SELECT cat, card_cat_id FROM card_cat";
-#    $sth = $dbh->prepare($query);
-#    $sth->execute();
-#    $sth->bind_columns(\$key, \$value);
-
-#    while ($sth->fetch()) {
-#	$categories{$key} = $value;
-#    }
-    
-#    $dbh->disconnect();
-
-#    return %categories;
     return query_hash("SELECT cat, card_cat_id FROM card_cat");
 }
 
@@ -453,7 +408,7 @@ sub category {
 # return a hash which maps the first value as key, the second as value
 sub query_hash {
     my $query = shift;
-        my ($dbh, $sth, $query, $key, $value);
+    my ($dbh, $sth, $query, $key, $value);
     my %lookup;
 
     $dbh = &createHandle();
