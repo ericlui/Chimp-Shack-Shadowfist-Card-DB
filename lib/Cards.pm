@@ -20,7 +20,7 @@ sub setPlayTest {
 sub createHandle {
     my $type = shift;
     if ($type eq "updater") {
-	return DBI->connect("DBI:mysql:$targetdb",'chimpsha_fistwri','get1t');
+	return DBI->connect("DBI:mysql:$targetdb",'chimpsha_fistwri','*****');
     }
       
     if(open F, $loginfile) { 
@@ -29,7 +29,7 @@ sub createHandle {
       my ($dbuser, $dbpasswd,$db)=split /\|/,$f;
       return DBI->connect("DBI:mysql:$db",$dbuser,$dbpasswd);
     }
-    return DBI->connect("DBI:mysql:$targetdb",'database_name','dbpassword');
+    return DBI->connect("DBI:mysql:$targetdb",'chimpsha_fistrea','g1mm3');
 }
 
 # Specify the database to reference
